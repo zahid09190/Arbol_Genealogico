@@ -107,6 +107,42 @@ void buscarPorApellidoPostorden(Nodo* raiz, const string& apellido) {
     }
 }
 
+//Elimiar miembro del arbol
+Nodo* eliminar(Nodo* raiz, string nombre) {
+    if (raiz == NULL) return NULL;
+
+    if (nombre < raiz->nombre)
+        raiz->izquierda = eliminar(raiz->izquierda, nombre);
+    else if (nombre > raiz->nombre)
+        raiz->derecha = eliminar(raiz->derecha, nombre);
+    else {
+        if (raiz->izquierda == NULL && raiz->derecha == NULL) {
+            delete raiz;
+            return NULL;
+        }
+        if (raiz->izquierda == NULL) {
+            Nodo* temp = raiz->derecha;
+            delete raiz;
+            return temp;
+        }
+        if (raiz->derecha == NULL) {
+            Nodo* temp = raiz->izquierda;
+            delete raiz;
+            return temp;
+        }
+
+        Nodo* sucesor = raiz->derecha;
+        while (sucesor->izquierda != NULL)
+            sucesor = sucesor->izquierda;
+        
+        // Copiar nombre y código del sucesor
+        raiz->nombre = sucesor->nombre;
+        raiz->codigo = sucesor->codigo;
+
+        raiz->derecha = eliminar(raiz->derecha, sucesor->nombre);
+    }
+    return raiz;
+}
 // Mostrar ancestros desde código
 void mostrarAncestros(Nodo* raiz, string codigo) {
     size_t pos = codigo.find_last_of('.');
@@ -161,8 +197,9 @@ int main() {
         cout << "6. Buscar miembros por apellido (preorden)\n";
         cout << "7. Buscar miembros por apellido (inorden)\n";
         cout << "8. Buscar miembros por apellido (postorden)\n";
-        cout << "9. Mostrar ancestros de un miembro\n";
-        cout << "10. Salir\n";
+        cout << "9. Eliminar miembro\n";
+        cout << "10. Mostrar ancestros de un miembro\n";
+        cout << "11. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
         cin.ignore();
@@ -240,19 +277,26 @@ int main() {
                 break;
             }
             case 9: {
+			    cout << "Ingrese nombre del miembro a eliminar: ";
+			    getline(cin, nombre);
+			    raiz = eliminar(raiz, nombre);
+			    cout << nombre << " ha sido eliminado (si existía en el árbol).\n";
+			    break;
+			}
+            case 10: {
                 cout << "Ingrese código ancestral (ej: 1.2.1): ";
                 string codigo;
                 getline(cin, codigo);
                 mostrarAncestros(raiz, codigo);
                 break;
             }
-            case 10:
+            case 11:
                 cout << "Saliendo...\n";
                 break;
             default:
                 cout << "Opción inválida.\n";
         }
-    } while (opcion != 10);
+    } while (opcion != 11);
 
     liberar(raiz);
     return 0;
