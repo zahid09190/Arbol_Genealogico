@@ -4,7 +4,7 @@ using namespace std;
 
 struct Nodo {
     string nombre;
-    string codigo;  // Código ancestral (ej: "1.2.1")
+    string codigo;  // Codigo ancestral (ej: "1.2.1")
     Nodo* izquierda;
     Nodo* derecha;
 };
@@ -150,7 +150,7 @@ void mostrarAncestros(Nodo* raiz, string codigo) {
         string codigoPadre = codigo.substr(0, pos);
         cout << "Ancestros de " << codigo << ":" << endl;
         while (!codigoPadre.empty()) {
-            cout << "- Generación " << codigoPadre << endl;
+            cout << "- Generacion " << codigoPadre << endl;
             pos = codigoPadre.find_last_of('.');
             if (pos == string::npos) break;
             codigoPadre = codigoPadre.substr(0, pos);
@@ -159,6 +159,21 @@ void mostrarAncestros(Nodo* raiz, string codigo) {
     } else {
         cout << "Es el fundador, no tiene ancestros." << endl;
     }
+}
+
+//Visualisacion del Arbol
+void mostrarArbolVisual(Nodo* raiz, int espacio = 0, bool esHijoIzquierdo = false) {
+    if (raiz == NULL) return;
+    espacio += 5;
+    mostrarArbolVisual(raiz->izquierda, espacio, true);
+    cout << endl;
+    for (int i = 5; i < espacio; i++) cout << " ";
+    if (esHijoIzquierdo)
+        cout << "+-- ";
+    else
+        cout << "+-- ";
+    cout << raiz->nombre << " (" << raiz->codigo << ")" << endl;
+    mostrarArbolVisual(raiz->derecha, espacio, false);
 }
 
 // Liberar memoria
@@ -177,15 +192,15 @@ int main() {
     string nombre;
 
     // Miembros iniciales
-    raiz = insertar(raiz, "Manco Cápac");
+    raiz = insertar(raiz, "Manco Capac");
     insertar(raiz, "Sinchi Roca");
     insertar(raiz, "Lloque Yupanqui");
-    insertar(raiz, "Mayta Cápac");
-    insertar(raiz, "Cápac Yupanqui");
+    insertar(raiz, "Mayta Capac");
+    insertar(raiz, "Capac Yupanqui");
     insertar(raiz, "Inca Roca");
-    insertar(raiz, "Yáhuar Huácac");
+    insertar(raiz, "Yahuar Huácac");
 
-    cout << "Árbol Genealógico Inca con Códigos Ancestrales\n";
+    cout << "Arbol Genealogico Inca con Codigos Ancestrales\n";
 
     do {
         cout << "\n--- Menú ---\n";
@@ -199,8 +214,9 @@ int main() {
         cout << "8. Buscar miembros por apellido (postorden)\n";
         cout << "9. Eliminar miembro\n";
         cout << "10. Mostrar ancestros de un miembro\n";
-        cout << "11. Salir\n";
-        cout << "Seleccione una opción: ";
+        cout << "11. Mostrar Aspecto Visual del Arbol\n";
+        cout << "12. Salir\n";
+        cout << "Seleccione una opcion: ";
         cin >> opcion;
         cin.ignore();
 
@@ -209,7 +225,7 @@ int main() {
                 cout << "Ingrese nombre del nuevo miembro: ";
                 getline(cin, nombre);
                 string padreNombre;
-                cout << "Ingrese nombre del padre (deje vacío si es el fundador): ";
+                cout << "Ingrese nombre del padre (deje vacio si es el fundador): ";
                 getline(cin, padreNombre);
                 
                 if (padreNombre.empty()) {
@@ -252,7 +268,7 @@ int main() {
                 if (encontrado != NULL)
                     mostrarNodo(encontrado);
                 else
-                    cout << nombre << " NO pertenece al árbol.\n";
+                    cout << nombre << " NO pertenece al arbol.\n";
                 break;
             }
             case 6: {
@@ -260,6 +276,7 @@ int main() {
                 string apellido;
                 getline(cin, apellido);
                 buscarPorApellido(raiz, apellido);
+                break;
                 break;
             }
             case 7: {
@@ -280,23 +297,30 @@ int main() {
 			    cout << "Ingrese nombre del miembro a eliminar: ";
 			    getline(cin, nombre);
 			    raiz = eliminar(raiz, nombre);
-			    cout << nombre << " ha sido eliminado (si existía en el árbol).\n";
+			    cout << nombre << " ha sido eliminado (si existia en el arbol).\n";
 			    break;
 			}
             case 10: {
-                cout << "Ingrese código ancestral (ej: 1.2.1): ";
+                cout << "Ingrese codigo ancestral (ej: 1.2.1): ";
                 string codigo;
                 getline(cin, codigo);
                 mostrarAncestros(raiz, codigo);
                 break;
             }
-            case 11:
+            case 11: {
+	    		cout << "\nArbol Genealogico Visual:\n";
+	    		cout << "------------------------\n";
+	    		mostrarArbolVisual(raiz);
+	    		cout << endl;
+    			break;
+			}
+            case 12:
                 cout << "Saliendo...\n";
                 break;
             default:
-                cout << "Opción inválida.\n";
+                cout << "Opcion invalida.\n";
         }
-    } while (opcion != 11);
+    } while (opcion != 12);
 
     liberar(raiz);
     return 0;
